@@ -1,0 +1,178 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+#top-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+    margin: 10px;
+}
+
+#status-container, #inventory-container {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    width: 45%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* --- Game Scene & Animations --- */
+#game-scene {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 300px;
+    background-color: #d4e7f7;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+#cashier-area {
+    position: absolute;
+    bottom: 0;
+    right: 50px;
+}
+
+#cashier-desk {
+    width: 150px;
+    height: 80px;
+    background-color: #8b5a2b;
+    border-radius: 10px 10px 0 0;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+#cashier {
+    position: absolute;
+    bottom: 80px;
+    right: 25px;
+    width: 100px;
+    height: 120px;
+    background: url('assets/cashier-sprite.svg') no-repeat;
+    background-size: 200% 100%;
+    animation: cashier-idle 2s steps(1) infinite;
+}
+
+@keyframes cashier-idle {
+    0% { background-position: 0% 0; }
+    50% { background-position: -100% 0; }
+    100% { background-position: 0% 0; }
+}
+
+#customer-area {
+    position: absolute;
+    bottom: 0;
+    left: -100px; /* Start off-screen */
+}
+
+#customer {
+    width: 100px;
+    height: 120px;
+    background: url('assets/customer-sprite.svg') no-repeat;
+    background-size: 400% 100%;
+}
+
+/* Customer Animation Classes */
+.is-walking {
+    animation: walk-sprite 0.8s steps(4) infinite;
+}
+
+.move-in {
+    animation: move-in 3s linear forwards;
+}
+
+.move-out {
+    animation: move-out 3s linear forwards;
+}
+
+@keyframes walk-sprite {
+    from { background-position: 0% 0; }
+    to { background-position: -400% 0; }
+}
+
+@keyframes move-in {
+    from { transform: translateX(0); }
+    to { transform: translateX(350px); } /* Moves customer to the counter */
+}
+
+@keyframes move-out {
+    from { transform: translateX(350px); }
+    to { transform: translateX(1000px); } /* Moves customer off-screen */
+}
+
+#order-bubble {
+    position: absolute;
+    bottom: 200px;
+    right: 125px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    min-width: 120px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#sell-button {
+    position: absolute;
+    bottom: 20px;
+    left: 45%;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#win-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+}
