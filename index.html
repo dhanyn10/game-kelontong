@@ -3,39 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toko Kelontong</title>
+    <title>Toko Kelontong v3</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Game Toko Kelontong</h1>
 
-    <div id="status-container">
-        <h2>Status Toko</h2>
-        <p>Uang Anda: <span id="player-money">100000</span></p>
-        <p>Target Uang: <span>500000</span></p>
+    <div id="top-container">
+        <div id="status-container">
+            <h2>Status Toko</h2>
+            <p>Uang Anda: <span id="player-money">100000</span></p>
+            <p>Target Uang: <span>500000</span></p>
+        </div>
+
+        <div id="inventory-container">
+            <h2>Inventaris Barang</h2>
+            <div class="item">
+                <span>Beras (Stok: <span id="stock-beras">0</span>)</span>
+                <button id="buy-beras">Beli (Rp 10,000)</button>
+            </div>
+            <div class="item">
+                <span>Telur (Stok: <span id="stock-telur">0</span>)</span>
+                <button id="buy-telur">Beli (Rp 2,000)</button>
+            </div>
+            <div class="item">
+                <span>Minyak Goreng (Stok: <span id="stock-minyak">0</span>)</span>
+                <button id="buy-minyak">Beli (Rp 15,000)</button>
+            </div>
+        </div>
     </div>
 
-    <div id="inventory-container">
-        <h2>Inventaris Barang</h2>
-        <div class="item">
-            <span>Beras (Stok: <span id="stock-beras">0</span>)</span>
-            <button id="buy-beras">Beli (Rp 10,000)</button>
+    <div id="game-scene">
+        <div id="cashier-area">
+            <div id="cashier-desk"></div>
+            <div id="cashier"></div>
         </div>
-        <div class="item">
-            <span>Telur (Stok: <span id="stock-telur">0</span>)</span>
-            <button id="buy-telur">Beli (Rp 2,000)</button>
+        <div id="customer-area">
+            <div id="customer"></div>
         </div>
-        <div class="item">
-            <span>Minyak Goreng (Stok: <span id="stock-minyak">0</span>)</span>
-            <button id="buy-minyak">Beli (Rp 15,000)</button>
-        </div>
-    </div>
-
-    <div id="customer-container">
-        <h2>Pelanggan</h2>
-        <div id="customer-order">
-            <p>Belum ada pelanggan.</p>
-        </div>
+        <div id="order-bubble" class="hidden">...</div>
         <button id="sell-button" disabled>Jual</button>
     </div>
 

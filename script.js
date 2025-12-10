@@ -3,43 +3,28 @@ const playerMoneyDisplay = document.getElementById('player-money');
 const stockBerasDisplay = document.getElementById('stock-beras');
 const stockTelurDisplay = document.getElementById('stock-telur');
 const stockMinyakDisplay = document.getElementById('stock-minyak');
-const customerOrderDisplay = document.getElementById('customer-order');
 const sellButton = document.getElementById('sell-button');
 const winMessage = document.getElementById('win-message');
+const customerArea = document.getElementById('customer-area');
+const customerDiv = document.getElementById('customer');
+const orderBubble = document.getElementById('order-bubble');
 
 // Game Variables
 let playerMoney = 100000;
 const winTarget = 500000;
-
-const items = {
-    beras: {
-        stock: 0,
-        buyPrice: 10000,
-        sellPrice: 12000,
-        display: stockBerasDisplay
-    },
-    telur: {
-        stock: 0,
-        buyPrice: 2000,
-        sellPrice: 2500,
-        display: stockTelurDisplay
-    },
-    minyak: {
-        stock: 0,
-        buyPrice: 15000,
-        sellPrice: 17000,
-        display: stockMinyakDisplay
-    }
-};
-
+let isGameActive = true;
 let currentCustomer = null;
 
-// Initial UI Update
+const items = {
+    beras: { stock: 0, buyPrice: 10000, sellPrice: 12000, display: stockBerasDisplay },
+    telur: { stock: 0, buyPrice: 2000, sellPrice: 2500, display: stockTelurDisplay },
+    minyak: { stock: 0, buyPrice: 15000, sellPrice: 17000, display: stockMinyakDisplay }
+};
+
+// --- UI Update ---
 function updateUI() {
     playerMoneyDisplay.textContent = playerMoney.toLocaleString();
-    items.beras.display.textContent = items.beras.stock;
-    items.telur.display.textContent = items.telur.stock;
-    items.minyak.display.textContent = items.minyak.stock;
+    Object.values(items).forEach(item => item.display.textContent = item.stock);
 }
 
 // --- Buy Item Logic ---
@@ -48,6 +33,7 @@ document.getElementById('buy-telur').addEventListener('click', () => buyItem('te
 document.getElementById('buy-minyak').addEventListener('click', () => buyItem('minyak'));
 
 function buyItem(itemName) {
+    if (!isGameActive) return;
     const item = items[itemName];
     if (playerMoney >= item.buyPrice) {
         playerMoney -= item.buyPrice;
@@ -58,20 +44,28 @@ function buyItem(itemName) {
     }
 }
 
-// --- Customer Logic ---
+// --- Customer Animation & Logic ---
 function generateCustomer() {
-    if (currentCustomer) return; // Don't generate a new customer if one is already waiting
+    if (currentCustomer || !isGameActive) return;
 
     const itemNames = Object.keys(items);
     const randomItem = itemNames[Math.floor(Math.random() * itemNames.length)];
     const randomQuantity = Math.floor(Math.random() * 3) + 1;
+    currentCustomer = { item: randomItem, quantity: randomQuantity };
 
-    currentCustomer = {
-        item: randomItem,
-        quantity: randomQuantity
-    };
+    customerArea.addEventListener('animationend', onCustomerArrived, { once: true });
 
-    customerOrderDisplay.innerHTML = `<p>Pelanggan ingin membeli ${randomQuantity} ${randomItem}.</p>`;
+    customerDiv.classList.add('is-walking');
+    customerArea.classList.add('move-in');
+}
+
+function onCustomerArrived(event) {
+    if (event.animationName !== 'move-in' || !currentCustomer) return;
+
+    customerDiv.classList.remove('is-walking');
+
+    orderBubble.textContent = `Beli ${currentCustomer.quantity} ${currentCustomer.item}`;
+    orderBubble.classList.remove('hidden');
     sellButton.disabled = false;
 }
 
@@ -83,39 +77,48 @@ sellButton.addEventListener('click', () => {
     if (item.stock >= currentCustomer.quantity) {
         item.stock -= currentCustomer.quantity;
         playerMoney += item.sellPrice * currentCustomer.quantity;
+        updateUI();
 
-        customerOrderDisplay.innerHTML = `<p>Berhasil menjual ${currentCustomer.quantity} ${currentCustomer.item}!</p>`;
-        currentCustomer = null;
+        orderBubble.classList.add('hidden');
         sellButton.disabled = true;
 
-        // Set a timeout to clear the success message and wait for a new customer
-        setTimeout(() => {
-            customerOrderDisplay.innerHTML = `<p>Belum ada pelanggan.</p>`;
-            // Start the timer for the next customer
-            setTimeout(generateCustomer, Math.random() * 5000 + 2000); // Random time between 2-7 seconds
-        }, 2000);
+        customerArea.addEventListener('animationend', onCustomerLeft, { once: true });
 
-        updateUI();
+        customerDiv.style.transform = 'scaleX(-1)';
+        customerDiv.classList.add('is-walking');
+        customerArea.classList.remove('move-in');
+        customerArea.classList.add('move-out');
+
+        currentCustomer = null;
+
         checkWinCondition();
     } else {
         alert("Stok tidak cukup!");
     }
 });
 
+function onCustomerLeft(event) {
+    if (event.animationName !== 'move-out') return;
 
-// --- Win Condition Logic ---
+    customerDiv.classList.remove('is-walking');
+    customerArea.classList.remove('move-out');
+    customerDiv.style.transform = 'scaleX(1)';
+
+    setTimeout(generateCustomer, Math.random() * 4000 + 2000);
+}
+
+// --- Win Condition ---
 function checkWinCondition() {
     if (playerMoney >= winTarget) {
+        isGameActive = false;
         winMessage.classList.remove('hidden');
-        // Disable all buttons to stop the game
-        sellButton.disabled = true;
         document.getElementById('buy-beras').disabled = true;
         document.getElementById('buy-telur').disabled = true;
         document.getElementById('buy-minyak').disabled = true;
+        sellButton.disabled = true;
     }
 }
 
-// Initialize the game
+// --- Initialize ---
 updateUI();
-// Start the customer generation loop
-setTimeout(generateCustomer, Math.random() * 5000 + 2000); // First customer arrives after 2-7 seconds
+setTimeout(generateCustomer, 2000);
